@@ -50,7 +50,7 @@ export default function CreateSubject(
         .createSubject(subjectData, `${api}`)
         .then((res) => {
           alert("Subject saved");
-          router.push("/");
+          router.push('/subjects/subjects');
         })
         .catch((err: AxiosError) => {
           handleError.handleServerError(err.response?.data);

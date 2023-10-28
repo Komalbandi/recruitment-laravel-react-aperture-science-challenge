@@ -23,7 +23,7 @@ export class Services {
 
   getSubject(id: number, url: string): Promise<Subject | string> {
     return new Promise((res, rej) => {
-      url = `${url}/api/subject/get/${id}`;
+      url = `${url}/api/subject/${id}`;
       axios
         .get(url)
         .then((response: AxiosResponse<Subject>) => {

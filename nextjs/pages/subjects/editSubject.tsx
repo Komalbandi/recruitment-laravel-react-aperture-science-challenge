@@ -75,7 +75,7 @@ export default function EditSubject(
         .updateSubject(subjectData, `${api}`)
         .then((res) => {
           alert("Subject saved");
-          router.push("/");
+          router.push('/subjects/subjects');
         })
         .catch((err: AxiosError) => {
           handleError.handleServerError(err.response?.data);
@@ -102,6 +102,7 @@ export default function EditSubject(
             name="id"
             value={subjectData["id"]}
             onChange={updateForm}
+            disabled
           />
           <label htmlFor="name">Name:</label>
           <br />

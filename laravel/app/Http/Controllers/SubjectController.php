@@ -54,7 +54,12 @@ class SubjectController extends Controller
      */
     public function show($id)
     {
-        $subject = Subject::where('id', $id);
+        try {
+            $subject = Subject::find($id);
+        } catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(['message' => 'Error getting subject'], 500);
+        }
         return $subject;
     }
 
@@ -65,7 +70,7 @@ class SubjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(SubjectRequest $request,int $id)
+    public function update(SubjectRequest $request, int $id)
     {
         try {
             $subject = Subject::find($id);

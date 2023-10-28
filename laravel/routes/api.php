@@ -23,4 +23,6 @@ Route::controller(SubjectController::class)->group(function () {
     Route::post('/subject/save', 'store');
 
     Route::post('/subject/update/{id}', 'update');
+
+    Route::get('/subject/{id}', 'show');
 });
