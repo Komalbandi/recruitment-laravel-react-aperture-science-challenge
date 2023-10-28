@@ -54,7 +54,7 @@
   width:150px;
 }
 
-.content input {
+.content input, .content select {
   display:inline-block;
   padding:0.5em .7em;
   background: rgba(0,0,0,.1);
@@ -66,7 +66,7 @@
   font-family: 'Roboto Condensed';
 }
 
-.content input:focus, .content input:focus-visible {
+.content input:focus, .content input:focus-visible, .content select:focus, .content select:focus-visible {
   border:none;
   background:white;
   outline:none;

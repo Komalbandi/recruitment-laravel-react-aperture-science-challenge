@@ -40,7 +40,7 @@ export default function Home(props: NextPage & {XSRF_TOKEN: string, hostname: st
             xsrfCookieName: 'XSRF-TOKEN',
             xsrfHeaderName: 'X-XSRF-TOKEN',
           }
-        }).then(res => router.push('/subjects'))
+        }).then(res => router.push('/subjects/subjects'))
         .catch(e => {
           if (e.response?.data?.message) {
             setFormMessage(e.response?.data?.message);

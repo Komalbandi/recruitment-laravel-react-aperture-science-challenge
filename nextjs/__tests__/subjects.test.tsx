@@ -23,7 +23,7 @@ describe('Subjects page, no session cookie', () => {
 
   beforeEach(async () => {
     const { render } = await getPage({
-      route: '/subjects',
+      route: '/subjects/subjects',
     });
 
     await render();
