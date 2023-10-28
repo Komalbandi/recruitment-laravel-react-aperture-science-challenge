@@ -21,4 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::controller(SubjectController::class)->group(function () {
     Route::post('/subject/save', 'store');
+
+    Route::post('/subject/update/{id}', 'update');
 });

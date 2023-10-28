@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\Subject\SaveSubjectRequest;
+use App\Http\Requests\SubjectRequest;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Log;
 
@@ -28,17 +28,17 @@ class SubjectController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(SaveSubjectRequest $request)
+    public function store(SubjectRequest $request)
     {
-        try{
-        $subject = new Subject;
-        $subject->name = $request->name;
-        $subject->test_chamber = $request->test_chamber;
-        $subject->date_of_birth = $request->date_of_birth;
-        $subject->score = $request->score;
-        $subject->alive = $request->alive;
-        $subject->save();
-        }catch(\Exception $e){
+        try {
+            $subject = new Subject;
+            $subject->name = $request->name;
+            $subject->test_chamber = $request->test_chamber;
+            $subject->date_of_birth = $request->date_of_birth;
+            $subject->score = $request->score;
+            $subject->alive = $request->alive;
+            $subject->save();
+        } catch (\Exception $e) {
             Log::error($e);
             return response()->json(['message' => 'Error saving subject'], 500);
         }
@@ -65,9 +65,22 @@ class SubjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(SubjectRequest $request,int $id)
     {
-        //
+        try {
+            $subject = Subject::find($id);
+            $subject->name = $request->name;
+            $subject->test_chamber = $request->test_chamber;
+            $subject->date_of_birth = $request->date_of_birth;
+            $subject->score = $request->score;
+            $subject->alive = $request->alive;
+            $subject->save();
+        } catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(['message' => 'Error saving subject'], 500);
+        }
+
+        return ['OK'];
     }
 
     /**

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Subject;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SaveSubjectRequest extends FormRequest
+class SubjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
