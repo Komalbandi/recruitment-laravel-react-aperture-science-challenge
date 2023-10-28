@@ -6,7 +6,7 @@ import axios from "axios";
 import { parseCookies, resolveApiHost } from "../../helpers";
 import { useRouter } from "next/router";
 import Layout from "../../components/layout";
-import {Subject} from '../../interfaces';
+import { Subject } from "../../interfaces";
 
 Subjects.getInitialProps = ({ req, res }: NextPageContext) => {
   const cookies = parseCookies(req);
@@ -50,6 +50,10 @@ export default function Subjects(
     }
     const date = new Date(dateStr);
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+  };
+
+  const editSubject = async (id: number) => {
+    router.push({ pathname: "/subjects/editSubject", query: { id } });
   };
 
   useEffect(() => {
@@ -117,6 +121,7 @@ export default function Subjects(
                 <td>Alive</td>
                 <td>Score</td>
                 <td>Test Chamber</td>
+                <td></td>
               </tr>
             </thead>
             <tbody>
@@ -128,6 +133,11 @@ export default function Subjects(
                   <td>{subject.alive ? "Y" : "N"}</td>
                   <td>{subject.score}</td>
                   <td>{subject.test_chamber}</td>
+                  <td>
+                    <button onClick={() => editSubject(subject.id)}>
+                      Edit
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

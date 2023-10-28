@@ -1,62 +1,61 @@
+import { useRouter } from "next/router";
 import { parseCookies, resolveApiHost, HandleError } from "../../helpers";
 import { NextPage, NextPageContext } from "next";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import Layout from "../../components/layout";
 import styles from "../../styles/App.module.css";
+import React, { useEffect, useState } from "react";
 import { Subject } from "../../interfaces";
 import { Services } from "./services";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import { validateForm } from "./common";
 
-CreateSubject.getInitialProps = ({ req, res }: NextPageContext) => {
+EditSubject.getInitialProps = ({ req, res }: NextPageContext) => {
   const cookies = parseCookies(req);
   const { protocol, hostname } = resolveApiHost(req);
   return { XSRF_TOKEN: cookies["XSRF-TOKEN"], hostname, protocol };
 };
 
-export default function CreateSubject(
+export default function EditSubject(
   props: NextPage & { XSRF_TOKEN: string; hostname: string; protocol: string }
 ) {
   const router = useRouter();
   const [authenticated, setAuth] = useState<Boolean>(!!props.XSRF_TOKEN);
   const [errorMessage, setErrorMessage] = useState<string[]>([]);
+  const [subjectId] = useState(router.query.id);
   const [subjectData, setSubjectData] = useState<Subject>({
-    id: 0,
+    id: Number(subjectId),
     name: " ",
     date_of_birth: "",
     score: 0,
     test_chamber: 0,
     alive: undefined,
   });
-  const handleError = new HandleError();
+
+  const serverService = new Services();
   const api = `${props.protocol}//${props.hostname}`;
-  let serverService = new Services();
+  const handleError = new HandleError();
 
   useEffect(() => {
     if (!authenticated) {
       router.push("/");
       return;
+    } else {
+      //get subject data
+      serverService
+        .getSubject(Number(subjectId), `${api}`)
+        .then((res) => {
+          setSubjectData({
+            id: (res as Subject).id,
+            name: (res as Subject).name,
+            date_of_birth: (res as Subject).date_of_birth,
+            score: (res as Subject).score,
+            test_chamber: (res as Subject).test_chamber,
+            alive: (res as Subject).alive,
+          });
+        })
+        .catch((err) => handleError.handleServerError(err));
     }
   }, [authenticated]);
-
-  const saveSubject = (buttonEvent: React.FormEvent) => {
-    buttonEvent.preventDefault();
-    setErrorMessage(validateForm(subjectData));
-    if (errorMessage.length === 0) {
-      //save data
-      serverService
-        .createSubject(subjectData, `${api}`)
-        .then((res) => {
-          alert("Subject saved");
-          router.push("/");
-        })
-        .catch((err: AxiosError) => {
-          handleError.handleServerError(err.response?.data);
-        });
-    }
-  };
 
   const updateForm = (event: React.ChangeEvent<HTMLElement>) => {
     let objectKey = (event.target as HTMLInputElement).name;
@@ -67,17 +66,43 @@ export default function CreateSubject(
     });
   };
 
+  const saveSubject = (buttonEvent: React.FormEvent) => {
+    buttonEvent.preventDefault();
+    setErrorMessage(validateForm(subjectData));
+    if (errorMessage.length === 0) {
+      //save data
+      serverService
+        .updateSubject(subjectData, `${api}`)
+        .then((res) => {
+          alert("Subject saved");
+          router.push("/");
+        })
+        .catch((err: AxiosError) => {
+          handleError.handleServerError(err.response?.data);
+        });
+    }
+  };
+
   return (
     <Layout>
-      <h1>Create subject</h1>
+      <h1>Edit subject</h1>
       <section className={styles.content}>
-        {errorMessage.map((errMess, index) => (
+        {errorMessage.map((errMess: string, index: number) => (
           <p data-testid="error-msg" key={index}>
             {errMess}
           </p>
         ))}
 
         <form>
+          <label htmlFor="name">Id:</label>
+          <br />
+          <input
+            type="text"
+            id="subjectId"
+            name="id"
+            value={subjectData["id"]}
+            onChange={updateForm}
+          />
           <label htmlFor="name">Name:</label>
           <br />
           <input

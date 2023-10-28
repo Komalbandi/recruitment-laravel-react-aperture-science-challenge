@@ -26,9 +26,9 @@ class SubjectRequest extends FormRequest
         return [
             'name' => 'required|string',
             'test_chamber' => 'required|integer',
-            'date_of_birth' => 'required|date',
+            'date_of_birth' => 'required',
             'score' => 'required|integer',
-            'alive' => 'required|boolean'
+            'alive' => 'required'
         ];
     }
 }
