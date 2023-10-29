@@ -20,9 +20,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::controller(SubjectController::class)->group(function () {
-    Route::post('/subject/save', 'store');
+    Route::middleware('auth:sanctum')->post('/subject/save', 'store');
 
-    Route::post('/subject/update/{id}', 'update');
+    Route::middleware('auth:sanctum')->post('/subject/update/{id}', 'update');
 
-    Route::get('/subject/{id}', 'show');
+    Route::middleware('auth:sanctum')->get('/subject/{id}', 'show');
 });
