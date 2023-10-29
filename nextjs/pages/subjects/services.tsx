@@ -4,14 +4,28 @@ import { Subject } from "../../interfaces";
 export class Services {
   constructor() {}
 
+  get headers() {
+    return {
+      "X-Requested-With": "XMLHttpRequest",
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      xsrfCookieName: "XSRF-TOKEN",
+      xsrfHeaderName: "X-XSRF-TOKEN",
+    };
+  }
   createSubject(
     data: Subject,
     url: string
   ): Promise<AxiosResponse<string> | AxiosError> {
     return new Promise((res, rej) => {
       url = `${url}/api/subject/save`;
-      axios
-        .post(url, data, { withCredentials: true })
+      axios({
+        method: "post",
+        url,
+        data,
+        withCredentials: true,
+        headers: this.headers,
+      })
         .then((response: AxiosResponse) => {
           res(response);
         })
@@ -24,8 +38,12 @@ export class Services {
   getSubject(id: number, url: string): Promise<Subject | string> {
     return new Promise((res, rej) => {
       url = `${url}/api/subject/${id}`;
-      axios
-        .get(url)
+      axios({
+        method: "get",
+        url,
+        withCredentials: true,
+        headers: this.headers,
+      })
         .then((response: AxiosResponse<Subject>) => {
           res(response.data);
         })
@@ -35,18 +53,25 @@ export class Services {
     });
   }
 
-  updateSubject(data: Subject,
-    url: string):Promise<AxiosResponse<string> | AxiosError>{
-      return new Promise((res, rej) => {
-        url = `${url}/api/subject/update/${data.id}`;
-        axios
-          .post(url, data, { withCredentials: true })
-          .then((response: AxiosResponse) => {
-            res(response);
-          })
-          .catch((err: AxiosError) => {
-            rej(err);
-          });
-      });
+  updateSubject(
+    data: Subject,
+    url: string
+  ): Promise<AxiosResponse<string> | AxiosError> {
+    return new Promise((res, rej) => {
+      url = `${url}/api/subject/update/${data.id}`;
+      axios({
+        method: "post",
+        url,
+        data,
+        withCredentials: true,
+        headers: this.headers,
+      })
+        .then((response: AxiosResponse) => {
+          res(response);
+        })
+        .catch((err: AxiosError) => {
+          rej(err);
+        });
+    });
   }
 }
