@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::controller(SubjectController::class)->group(function () {
+    Route::middleware('auth:sanctum')->get('/subject', 'index');
+
     Route::middleware('auth:sanctum')->post('/subject/save', 'store');
 
     Route::middleware('auth:sanctum')->post('/subject/update/{id}', 'update');
