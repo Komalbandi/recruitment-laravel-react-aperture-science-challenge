@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Subject } from "../../interfaces";
+import { Subject, SubjectResponse } from "../../interfaces";
 
 export class Services {
   constructor() {}
@@ -68,6 +68,23 @@ export class Services {
       })
         .then((response: AxiosResponse) => {
           res(response);
+        })
+        .catch((err: AxiosError) => {
+          rej(err);
+        });
+    });
+  }
+
+  getAll(url: string): Promise<SubjectResponse | AxiosError> {
+    return new Promise((res, rej) => {
+      axios({
+        method: "get",
+        url,
+        withCredentials: true,
+        headers: this.headers,
+      })
+        .then((response: AxiosResponse<SubjectResponse>) => {
+          res(response.data);
         })
         .catch((err: AxiosError) => {
           rej(err);

@@ -14,3 +14,10 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.pagination-component {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+

@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import { NextPage, NextPageContext } from "next";
 import { useCookies } from "react-cookie";
 import styles from "../../styles/App.module.css";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { parseCookies, resolveApiHost } from "../../helpers";
 import { useRouter } from "next/router";
 import Layout from "../../components/layout";
-import { Subject } from "../../interfaces";
+import PaginationComponent from "../../components/paginationComponent";
+import { Subject, SubjectResponse, Paginiation } from "../../interfaces";
+import { Services } from "./services";
+import { paginationReducer } from "../../reducers/paginationReducer";
 
 Subjects.getInitialProps = ({ req, res }: NextPageContext) => {
   const cookies = parseCookies(req);
@@ -23,6 +26,30 @@ export default function Subjects(
   const [message, setErrorMessage] = useState<string>("");
   const [cookie, setCookie, removeCookie] = useCookies(["XSRF-TOKEN"]);
   const api = `${props.protocol}//${props.hostname}`;
+  const serverService = new Services();
+  const [paginationData, setPaginationData] = useState<Paginiation | null>(
+    null
+  );
+  const [subjectServerLink, setSubjectServerLink] = useState<string>(`${api}/api/subject/`);
+
+  let initPagination = {
+    current_page: null,
+    first_page_url: null,
+    from: null,
+    last_page: null,
+    last_page_url: null,
+    next_page_url: null,
+    path: null,
+    per_page: null,
+    prev_page_url: null,
+    to: null,
+    total: null,
+  };
+
+  const [paginationState, paginationDispatch] = useReducer(
+    paginationReducer,
+    initPagination
+  );
 
   const logout = async () => {
     try {
@@ -58,34 +85,20 @@ export default function Subjects(
 
   useEffect(() => {
     if (authenticated) {
-      axios
-        .post(
-          `${api}/graphql`,
-          {
-            query: `
-              query {
-                subjects {
-                  id
-                  name
-                  test_chamber
-                  date_of_birth
-                  score
-                  alive
-                  created_at
-                }
-              }
-            `,
-          },
-          { withCredentials: true }
-        )
+      serverService
+        .getAll(subjectServerLink)
         .then((response) => {
-          const { subjects = [] } = response.data?.data;
+          const subjects = (response as SubjectResponse).data;
           if (subjects && subjects.length > 0) {
+            paginationDispatch({
+              type: "update",
+              payload: response as SubjectResponse,
+            });
+            console.log(subjects);
             return setSubjects(subjects as Subject[]);
           }
         })
-        .catch((e) => {
-          console.log(e);
+        .catch((e: AxiosError) => {
           if (e.response?.data?.message) {
             if (e.response?.data?.message === "CSRF token mismatch.") {
               return setErrorMessage(
@@ -104,7 +117,7 @@ export default function Subjects(
       router.push("/");
       return;
     }
-  }, [authenticated]);
+  }, [authenticated, subjectServerLink]);
 
   return (
     <Layout>
@@ -171,6 +184,17 @@ export default function Subjects(
             </table>
           </div>
         )}
+        <PaginationComponent
+          paginationState={{
+            state: paginationState,
+            dispatch: paginationDispatch,
+          }}
+          serverLink={{
+            state: subjectServerLink,
+            setState: setSubjectServerLink,
+          }}
+        />
+        <br />
         {authenticated && (
           <button onClick={createSubject}>Create subject</button>
         )}
